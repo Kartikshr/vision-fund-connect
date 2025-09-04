@@ -22,12 +22,13 @@ import {
   Presentation
 } from "lucide-react";
 import InvestorCard from "@/components/InvestorCard";
-import AIRecommendations from "@/components/AIRecommendations";
+import AIAssistant from "@/components/AIAssistant";
 import PitchCreator from "@/components/PitchCreator";
 
 const FounderDashboard = () => {
   const navigate = useNavigate();
   const [showPitchCreator, setShowPitchCreator] = useState(false);
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
 
   // Mock data for investors
   const investors = [
@@ -256,10 +257,9 @@ const FounderDashboard = () => {
 
         {/* Main Content */}
         <Tabs defaultValue="investors" className="space-y-8">
-          <TabsList className="grid w-full md:w-fit grid-cols-4">
+          <TabsList className="grid w-full md:w-fit grid-cols-3">
             <TabsTrigger value="investors">Investors</TabsTrigger>
             <TabsTrigger value="pitch">My Pitch</TabsTrigger>
-            <TabsTrigger value="ai-recommendations">AI Suggestions</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
           </TabsList>
 
@@ -290,9 +290,6 @@ const FounderDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="ai-recommendations">
-            <AIRecommendations type="founder" />
-          </TabsContent>
 
           <TabsContent value="messages" className="space-y-6">
             <Card className="bg-gradient-card shadow-soft">
@@ -309,6 +306,24 @@ const FounderDashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Floating AI Assistant Button */}
+      {!showAIAssistant && (
+        <Button
+          onClick={() => setShowAIAssistant(true)}
+          className="fixed bottom-4 right-4 w-12 h-12 rounded-full bg-gradient-primary hover:opacity-90 shadow-lg z-40 p-0"
+        >
+          <Brain className="w-5 h-5 text-primary-foreground" />
+        </Button>
+      )}
+
+      {/* AI Assistant Popup */}
+      {showAIAssistant && (
+        <AIAssistant 
+          type="founder" 
+          onClose={() => setShowAIAssistant(false)} 
+        />
+      )}
 
       {showPitchCreator && (
         <PitchCreator onClose={() => setShowPitchCreator(false)} />

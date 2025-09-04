@@ -21,11 +21,13 @@ import {
   ArrowLeft,
   Calendar
 } from "lucide-react";
+import InvestorCard from "@/components/InvestorCard";
 import StartupCard from "@/components/StartupCard";
-import AIRecommendations from "@/components/AIRecommendations";
+import AIAssistant from "@/components/AIAssistant";
 
 const InvestorDashboard = () => {
   const navigate = useNavigate();
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   // Mock data for startups
@@ -189,10 +191,9 @@ const InvestorDashboard = () => {
 
         {/* Main Content */}
         <Tabs defaultValue="discover" className="space-y-8">
-          <TabsList className="grid w-full md:w-fit grid-cols-4">
+          <TabsList className="grid w-full md:w-fit grid-cols-3">
             <TabsTrigger value="discover">Discover</TabsTrigger>
             <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
-            <TabsTrigger value="ai-recommendations">AI Suggestions</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
           </TabsList>
 
@@ -236,9 +237,6 @@ const InvestorDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="ai-recommendations">
-            <AIRecommendations type="investor" />
-          </TabsContent>
 
           <TabsContent value="messages" className="space-y-6">
             <Card className="bg-gradient-card shadow-soft">
@@ -255,6 +253,24 @@ const InvestorDashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Floating AI Assistant Button */}
+      {!showAIAssistant && (
+        <Button
+          onClick={() => setShowAIAssistant(true)}
+          className="fixed bottom-4 right-4 w-12 h-12 rounded-full bg-gradient-primary hover:opacity-90 shadow-lg z-40 p-0"
+        >
+          <Brain className="w-5 h-5 text-primary-foreground" />
+        </Button>
+      )}
+
+      {/* AI Assistant Popup */}
+      {showAIAssistant && (
+        <AIAssistant 
+          type="investor" 
+          onClose={() => setShowAIAssistant(false)} 
+        />
+      )}
     </div>
   );
 };
