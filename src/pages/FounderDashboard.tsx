@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +16,7 @@ import {
   Brain,
   Star,
   ArrowUp,
+  ArrowLeft,
   Calendar,
   Target,
   Presentation
@@ -24,6 +26,7 @@ import AIRecommendations from "@/components/AIRecommendations";
 import PitchCreator from "@/components/PitchCreator";
 
 const FounderDashboard = () => {
+  const navigate = useNavigate();
   const [showPitchCreator, setShowPitchCreator] = useState(false);
 
   // Mock data for investors
@@ -115,6 +118,15 @@ const FounderDashboard = () => {
         </div>
       </header>
 
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate('/dashboard-selection')}
+          className="mb-6 hover:bg-primary/10"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Dashboard Selection
+        </Button>
+
       <div className="container mx-auto px-6 py-8">
         {/* Funding Progress */}
         <Card className="bg-gradient-card shadow-soft mb-8">
@@ -170,7 +182,7 @@ const FounderDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-muted-foreground text-sm">Total Raised</p>
-                  <p className="text-2xl font-bold text-card-foreground">$1.75M</p>
+                  <p className="text-2xl font-bold text-card-foreground">₹0</p>
                 </div>
                 <div className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center">
                   <DollarSign className="w-6 h-6 text-primary-foreground" />
@@ -178,7 +190,7 @@ const FounderDashboard = () => {
               </div>
               <div className="flex items-center mt-2 text-sm">
                 <Target className="w-4 h-4 text-accent mr-1" />
-                <span className="text-accent">70%</span>
+                <span className="text-accent">0%</span>
                 <span className="text-muted-foreground ml-1">of goal</span>
               </div>
             </CardContent>
@@ -189,7 +201,7 @@ const FounderDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-muted-foreground text-sm">Investor Matches</p>
-                  <p className="text-2xl font-bold text-card-foreground">34</p>
+                  <p className="text-2xl font-bold text-card-foreground">0</p>
                 </div>
                 <div className="w-12 h-12 bg-gradient-accent rounded-xl flex items-center justify-center">
                   <Brain className="w-6 h-6 text-accent-foreground" />
@@ -197,7 +209,7 @@ const FounderDashboard = () => {
               </div>
               <div className="flex items-center mt-2 text-sm">
                 <ArrowUp className="w-4 h-4 text-accent mr-1" />
-                <span className="text-accent">+8</span>
+                <span className="text-accent">+0</span>
                 <span className="text-muted-foreground ml-1">this week</span>
               </div>
             </CardContent>
@@ -208,7 +220,7 @@ const FounderDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-muted-foreground text-sm">Pitch Views</p>
-                  <p className="text-2xl font-bold text-card-foreground">{currentPitch.views}</p>
+                  <p className="text-2xl font-bold text-card-foreground">0</p>
                 </div>
                 <div className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center">
                   <Presentation className="w-6 h-6 text-primary-foreground" />
@@ -216,7 +228,7 @@ const FounderDashboard = () => {
               </div>
               <div className="flex items-center mt-2 text-sm">
                 <TrendingUp className="w-4 h-4 text-accent mr-1" />
-                <span className="text-accent">+24</span>
+                <span className="text-accent">+0</span>
                 <span className="text-muted-foreground ml-1">today</span>
               </div>
             </CardContent>
@@ -227,7 +239,7 @@ const FounderDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-muted-foreground text-sm">Active Conversations</p>
-                  <p className="text-2xl font-bold text-card-foreground">7</p>
+                  <p className="text-2xl font-bold text-card-foreground">0</p>
                 </div>
                 <div className="w-12 h-12 bg-gradient-accent rounded-xl flex items-center justify-center">
                   <Users className="w-6 h-6 text-accent-foreground" />
@@ -235,7 +247,7 @@ const FounderDashboard = () => {
               </div>
               <div className="flex items-center mt-2 text-sm">
                 <Calendar className="w-4 h-4 text-warning mr-1" />
-                <span className="text-warning">3</span>
+                <span className="text-warning">0</span>
                 <span className="text-muted-foreground ml-1">meetings scheduled</span>
               </div>
             </CardContent>

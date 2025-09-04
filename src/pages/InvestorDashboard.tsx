@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,12 +18,14 @@ import {
   Star,
   ArrowUp,
   ArrowDown,
+  ArrowLeft,
   Calendar
 } from "lucide-react";
 import StartupCard from "@/components/StartupCard";
 import AIRecommendations from "@/components/AIRecommendations";
 
 const InvestorDashboard = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
 
   // Mock data for startups
@@ -95,6 +98,15 @@ const InvestorDashboard = () => {
         </div>
       </header>
 
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate('/dashboard-selection')}
+          className="mb-6 hover:bg-primary/10"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Dashboard Selection
+        </Button>
+      
       <div className="container mx-auto px-6 py-8">
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -103,7 +115,7 @@ const InvestorDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-muted-foreground text-sm">Portfolio Value</p>
-                  <p className="text-2xl font-bold text-card-foreground">$8.2M</p>
+                  <p className="text-2xl font-bold text-card-foreground">₹0</p>
                 </div>
                 <div className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center">
                   <DollarSign className="w-6 h-6 text-primary-foreground" />
@@ -111,7 +123,7 @@ const InvestorDashboard = () => {
               </div>
               <div className="flex items-center mt-2 text-sm">
                 <ArrowUp className="w-4 h-4 text-accent mr-1" />
-                <span className="text-accent">+12.5%</span>
+                <span className="text-accent">+0%</span>
                 <span className="text-muted-foreground ml-1">this month</span>
               </div>
             </CardContent>
@@ -122,7 +134,7 @@ const InvestorDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-muted-foreground text-sm">Active Investments</p>
-                  <p className="text-2xl font-bold text-card-foreground">23</p>
+                  <p className="text-2xl font-bold text-card-foreground">0</p>
                 </div>
                 <div className="w-12 h-12 bg-gradient-accent rounded-xl flex items-center justify-center">
                   <Briefcase className="w-6 h-6 text-accent-foreground" />
@@ -130,7 +142,7 @@ const InvestorDashboard = () => {
               </div>
               <div className="flex items-center mt-2 text-sm">
                 <ArrowUp className="w-4 h-4 text-accent mr-1" />
-                <span className="text-accent">+3</span>
+                <span className="text-accent">+0</span>
                 <span className="text-muted-foreground ml-1">new this week</span>
               </div>
             </CardContent>
@@ -141,7 +153,7 @@ const InvestorDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-muted-foreground text-sm">AI Matches</p>
-                  <p className="text-2xl font-bold text-card-foreground">47</p>
+                  <p className="text-2xl font-bold text-card-foreground">0</p>
                 </div>
                 <div className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center">
                   <Brain className="w-6 h-6 text-primary-foreground" />
@@ -149,7 +161,7 @@ const InvestorDashboard = () => {
               </div>
               <div className="flex items-center mt-2 text-sm">
                 <Star className="w-4 h-4 text-warning mr-1" />
-                <span className="text-warning">5</span>
+                <span className="text-warning">0</span>
                 <span className="text-muted-foreground ml-1">high priority</span>
               </div>
             </CardContent>
@@ -160,7 +172,7 @@ const InvestorDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-muted-foreground text-sm">Success Rate</p>
-                  <p className="text-2xl font-bold text-card-foreground">84%</p>
+                  <p className="text-2xl font-bold text-card-foreground">0%</p>
                 </div>
                 <div className="w-12 h-12 bg-gradient-accent rounded-xl flex items-center justify-center">
                   <Users className="w-6 h-6 text-accent-foreground" />
@@ -168,7 +180,7 @@ const InvestorDashboard = () => {
               </div>
               <div className="flex items-center mt-2 text-sm">
                 <ArrowUp className="w-4 h-4 text-accent mr-1" />
-                <span className="text-accent">+2.1%</span>
+                <span className="text-accent">+0%</span>
                 <span className="text-muted-foreground ml-1">vs last quarter</span>
               </div>
             </CardContent>
