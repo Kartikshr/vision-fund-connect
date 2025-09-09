@@ -44,13 +44,13 @@ const LandingPage = () => {
             meaningful connections that transform possibilities into realities.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/dashboard-selection">
+            <Link to="/investor-login">
               <Button size="lg" className="bg-gradient-primary hover:opacity-90 shadow-medium">
                 <Users className="mr-2 w-5 h-5" />
                 I'm an Investor
               </Button>
             </Link>
-            <Link to="/dashboard-selection">
+            <Link to="/founder-login">
               <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary/5">
                 <Zap className="mr-2 w-5 h-5" />
                 I'm a Founder

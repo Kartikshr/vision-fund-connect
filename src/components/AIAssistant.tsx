@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { generateAIResponse } from "@/services/geminiApi";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { 
   Brain, 
@@ -8,7 +10,9 @@ import {
   Zap,
   ArrowRight,
   Target,
-  MessageSquare
+  MessageSquare,
+  Send,
+  Loader2
 } from "lucide-react";
 
 interface AIAssistantProps {
@@ -18,6 +22,9 @@ interface AIAssistantProps {
 
 const AIAssistant = ({ type, onClose }: AIAssistantProps) => {
   const [currentView, setCurrentView] = useState<"recommendations" | "chat">("recommendations");
+  const [chatMessages, setChatMessages] = useState<Array<{role: 'user' | 'assistant', content: string}>>([]);
+  const [inputMessage, setInputMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const investorRecommendations = [
     {
@@ -59,8 +66,36 @@ const AIAssistant = ({ type, onClose }: AIAssistantProps) => {
 
   const recommendations = type === "investor" ? investorRecommendations : founderRecommendations;
 
+  const handleSendMessage = async () => {
+    if (!inputMessage.trim() || isLoading) return;
+
+    const userMessage = inputMessage.trim();
+    setInputMessage("");
+    setChatMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    setIsLoading(true);
+
+    try {
+      const aiResponse = await generateAIResponse(userMessage, type);
+      setChatMessages(prev => [...prev, { role: 'assistant', content: aiResponse }]);
+    } catch (error) {
+      setChatMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: "I'm sorry, I encountered an error. Please try again." 
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
   return (
-    <div className="fixed bottom-4 right-4 w-96 max-h-[500px] bg-background border border-border rounded-lg shadow-xl z-50">
+    <div className="fixed bottom-4 right-4 w-96 max-h-[600px] bg-background border border-border rounded-lg shadow-xl z-50 flex flex-col">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -129,11 +164,53 @@ const AIAssistant = ({ type, onClose }: AIAssistantProps) => {
             ))}
           </div>
         ) : (
-          <div className="space-y-3">
-            <div className="p-3 bg-muted/30 rounded-lg">
-              <p className="text-xs text-muted-foreground text-center">
-                AI Chat assistant coming soon...
-              </p>
+          <div className="flex flex-col h-80">
+            {/* Chat Messages */}
+            <div className="flex-1 overflow-y-auto space-y-3 mb-3">
+              {chatMessages.length === 0 ? (
+                <div className="p-3 bg-muted/30 rounded-lg text-center">
+                  <Brain className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                  <p className="text-xs text-muted-foreground">
+                    Hi! I'm your AI assistant. Ask me anything about {type === "investor" ? "investments, due diligence, or market insights" : "fundraising, pitching, or business development"}.
+                  </p>
+                </div>
+              ) : (
+                chatMessages.map((message, index) => (
+                  <div key={index} className={`p-3 rounded-lg ${
+                    message.role === 'user' 
+                      ? 'bg-primary text-primary-foreground ml-4' 
+                      : 'bg-muted/50 mr-4'
+                  }`}>
+                    <p className="text-xs leading-relaxed">{message.content}</p>
+                  </div>
+                ))
+              )}
+              {isLoading && (
+                <div className="p-3 bg-muted/50 rounded-lg mr-4 flex items-center">
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  <p className="text-xs text-muted-foreground">Thinking...</p>
+                </div>
+              )}
+            </div>
+            
+            {/* Chat Input */}
+            <div className="flex items-center space-x-2 border-t pt-3">
+              <Input
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Ask me anything..."
+                className="flex-1 text-xs"
+                disabled={isLoading}
+              />
+              <Button 
+                onClick={handleSendMessage}
+                disabled={!inputMessage.trim() || isLoading}
+                size="sm"
+                className="px-3"
+              >
+                <Send className="w-3 h-3" />
+              </Button>
             </div>
           </div>
         )}

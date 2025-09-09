@@ -59,7 +59,7 @@ const DashboardSelection = () => {
                   <span className="text-card-foreground">Automated legal agreements</span>
                 </div>
               </div>
-              <Link to="/investor-dashboard" className="block">
+              <Link to="/investor-login" className="block">
                 <Button className="w-full bg-gradient-primary hover:opacity-90 shadow-medium">
                   Access Investor Dashboard
                   <Users className="ml-2 w-4 h-4" />
@@ -100,7 +100,7 @@ const DashboardSelection = () => {
                   <span className="text-card-foreground">Mentorship opportunities</span>
                 </div>
               </div>
-              <Link to="/founder-dashboard" className="block">
+              <Link to="/founder-login" className="block">
                 <Button className="w-full bg-gradient-accent hover:opacity-90 shadow-medium">
                   Access Founder Dashboard
                   <Zap className="ml-2 w-4 h-4" />
