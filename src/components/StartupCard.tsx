@@ -2,6 +2,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { useAuth } from "@/contexts/AuthContext";
+import { useMessages } from "@/hooks/useMessages";
+import { supabase } from "@/lib/supabase";
 import { 
   MapPin, 
   Users, 
@@ -34,7 +37,30 @@ interface StartupCardProps {
 }
 
 const StartupCard = ({ startup, isInvestor = false }: StartupCardProps) => {
+  const { profile } = useAuth();
+  const { createConversation } = useMessages();
   const fundingProgress = (startup.raised / startup.fundingGoal) * 100;
+
+  const handleConnect = async () => {
+    if (!profile || !isInvestor) return;
+    
+    try {
+      // Find the founder's profile by name (in a real app, you'd have proper IDs)
+      const { data: founderProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('full_name', startup.founderName)
+        .eq('user_type', 'founder')
+        .single();
+
+      if (founderProfile) {
+        await createConversation(founderProfile.id);
+        // You could show a success message here
+      }
+    } catch (error) {
+      console.error('Error connecting with founder:', error);
+    }
+  };
 
   return (
     <Card className="bg-gradient-card border-border shadow-soft hover:shadow-medium transition-all duration-300">
@@ -136,13 +162,13 @@ const StartupCard = ({ startup, isInvestor = false }: StartupCardProps) => {
               </>
             ) : (
               <>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" onClick={handleConnect}>
                   <MessageSquare className="w-4 h-4 mr-2" />
-                  Message
+                  Connect
                 </Button>
                 <Button size="sm" className="bg-gradient-accent hover:opacity-90">
                   <TrendingUp className="w-4 h-4 mr-2" />
-                  Connect
+                  View Details
                 </Button>
               </>
             )}

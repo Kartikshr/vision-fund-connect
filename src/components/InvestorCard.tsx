@@ -1,6 +1,9 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
+import { useMessages } from "@/hooks/useMessages";
+import { supabase } from "@/lib/supabase";
 import { 
   MapPin, 
   Briefcase, 
@@ -30,6 +33,30 @@ interface InvestorCardProps {
 }
 
 const InvestorCard = ({ investor }: InvestorCardProps) => {
+  const { profile } = useAuth();
+  const { createConversation } = useMessages();
+
+  const handleConnect = async () => {
+    if (!profile) return;
+    
+    try {
+      // Find the investor's profile by name (in a real app, you'd have proper IDs)
+      const { data: investorProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('full_name', investor.partnerName)
+        .eq('user_type', 'investor')
+        .single();
+
+      if (investorProfile) {
+        await createConversation(investorProfile.id);
+        // You could show a success message here
+      }
+    } catch (error) {
+      console.error('Error connecting with investor:', error);
+    }
+  };
+
   return (
     <Card className="bg-gradient-card border-border shadow-soft hover:shadow-medium transition-all duration-300">
       <CardHeader className="pb-4">
@@ -137,7 +164,7 @@ const InvestorCard = ({ investor }: InvestorCardProps) => {
             <Button variant="outline" size="sm">
               <Briefcase className="w-4 h-4 mr-2" />
               View Portfolio
-            </Button>
+              <Button size="sm" className="bg-gradient-accent hover:opacity-90" onClick={handleConnect}>
             <Button size="sm" className="bg-gradient-accent hover:opacity-90">
               <MessageSquare className="w-4 h-4 mr-2" />
               Connect

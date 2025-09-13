@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,24 +8,38 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   TrendingUp, 
   ArrowLeft, 
   Zap, 
-  Upload,
   X,
-  Plus
+  Plus,
+  Loader2
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const FounderLogin = () => {
   const navigate = useNavigate();
+  const { signUp, signIn } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [isSignUp, setIsSignUp] = useState(true);
+  
+  // Sign in form
+  const [signInData, setSignInData] = useState({
+    email: "",
+    password: "",
+  });
+  
+  // Sign up form
   const [formData, setFormData] = useState({
     // Basic Information
     fullName: "",
     email: "",
+    password: "",
+    confirmPassword: "",
     phone: "",
-    profilePicture: null as File | null,
     
     // Company Information
     companyName: "",
@@ -105,10 +120,66 @@ const FounderLogin = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Since we don't have a database, we'll just navigate to the dashboard
-    navigate("/founder-dashboard");
+    setIsLoading(true);
+    setError("");
+
+    try {
+      await signIn(signInData.email, signInData.password);
+      navigate("/founder-dashboard");
+    } catch (error: any) {
+      setError(error.message || "Failed to sign in");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      setIsLoading(false);
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      await signUp(formData.email, formData.password, {
+        fullName: formData.fullName,
+        phone: formData.phone,
+        userType: 'founder',
+        companyName: formData.companyName,
+        industry: formData.industry,
+        startupStage: formData.startupStage,
+        location: formData.location,
+        companyDescription: formData.companyDescription,
+        website: formData.website,
+        linkedin: formData.linkedin,
+        otherLinks: formData.otherLinks,
+        amountRaised: formData.amountRaised,
+        fundingRequired: formData.fundingRequired,
+        keyInvestors: formData.keyInvestors,
+        teamSize: formData.teamSize,
+        keyMembers: formData.keyMembers,
+        investorTypes: formData.investorTypes,
+        preferredInvestmentSize: formData.preferredInvestmentSize,
+        targetGeographies: formData.targetGeographies,
+      });
+      navigate("/founder-dashboard");
+    } catch (error: any) {
+      setError(error.message || "Failed to create account");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -142,7 +213,70 @@ const FounderLogin = () => {
           <p className="text-muted-foreground">Create your founder profile to connect with investors</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <Tabs value={isSignUp ? "signup" : "signin"} onValueChange={(value) => setIsSignUp(value === "signup")}>
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="signin">Sign In</TabsTrigger>
+            <TabsTrigger value="signup">Sign Up</TabsTrigger>
+          </TabsList>
+
+          {error && (
+            <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg">
+              {error}
+            </div>
+          )}
+
+          <TabsContent value="signin">
+            <form onSubmit={handleSignIn} className="space-y-6">
+              <Card className="bg-gradient-card shadow-soft">
+                <CardHeader>
+                  <CardTitle>Sign In to Your Account</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="signin-email">Email Address</Label>
+                    <Input 
+                      id="signin-email"
+                      type="email"
+                      required
+                      value={signInData.email}
+                      onChange={(e) => setSignInData({...signInData, email: e.target.value})}
+                      placeholder="your.email@example.com"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="signin-password">Password</Label>
+                    <Input 
+                      id="signin-password"
+                      type="password"
+                      required
+                      value={signInData.password}
+                      onChange={(e) => setSignInData({...signInData, password: e.target.value})}
+                      placeholder="Enter your password"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Button 
+                type="submit" 
+                className="w-full bg-gradient-accent hover:opacity-90 shadow-medium"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Signing In...
+                  </>
+                ) : (
+                  "Sign In"
+                )}
+              </Button>
+            </form>
+          </TabsContent>
+
+          <TabsContent value="signup">
+            <form onSubmit={handleSignUp} className="space-y-8">
           {/* Basic Information */}
           <Card className="bg-gradient-card shadow-soft">
             <CardHeader>
@@ -183,13 +317,28 @@ const FounderLogin = () => {
                 />
               </div>
 
-              <div>
-                <Label htmlFor="profilePicture">Profile Picture (Optional)</Label>
-                <div className="mt-2">
-                  <Button type="button" variant="outline" className="w-full">
-                    <Upload className="w-4 h-4 mr-2" />
-                    Upload Photo
-                  </Button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="password">Password *</Label>
+                  <Input 
+                    id="password"
+                    type="password"
+                    required
+                    value={formData.password}
+                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                    placeholder="Enter password (min 6 characters)"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="confirmPassword">Confirm Password *</Label>
+                  <Input 
+                    id="confirmPassword"
+                    type="password"
+                    required
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+                    placeholder="Confirm your password"
+                  />
                 </div>
               </div>
             </CardContent>
@@ -463,10 +612,23 @@ const FounderLogin = () => {
             </CardContent>
           </Card>
 
-          <Button type="submit" className="w-full bg-gradient-accent hover:opacity-90 shadow-medium">
-            Create Founder Profile
-          </Button>
-        </form>
+              <Button 
+                type="submit" 
+                className="w-full bg-gradient-accent hover:opacity-90 shadow-medium"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Creating Account...
+                  </>
+                ) : (
+                  "Create Founder Profile"
+                )}
+              </Button>
+            </form>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

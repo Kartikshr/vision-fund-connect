@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useMessages } from "@/hooks/useMessages";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,16 +21,32 @@ import {
   ArrowLeft,
   Calendar,
   Target,
-  Presentation
+  Presentation,
+  LogOut
 } from "lucide-react";
 import InvestorCard from "@/components/InvestorCard";
 import AIAssistant from "@/components/AIAssistant";
 import PitchCreator from "@/components/PitchCreator";
+import MessageCenter from "@/components/MessageCenter";
 
 const FounderDashboard = () => {
   const navigate = useNavigate();
+  const { profile, signOut } = useAuth();
+  const { conversations } = useMessages();
   const [showPitchCreator, setShowPitchCreator] = useState(false);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
+  const [showMessages, setShowMessages] = useState(false);
+
+  const unreadCount = conversations.reduce((total, conv) => total + (conv.unread_count || 0), 0);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      navigate("/");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
 
   // Mock data for investors
   const investors = [
@@ -99,13 +117,13 @@ const FounderDashboard = () => {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-foreground">Founder Dashboard</h1>
-                <p className="text-sm text-muted-foreground">Welcome back, Sarah Chen</p>
+                <p className="text-sm text-muted-foreground">Welcome back, {profile?.full_name}</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
-              <Button variant="outline">
+              <Button variant="outline" onClick={() => setShowMessages(true)}>
                 <MessageSquare className="w-4 h-4 mr-2" />
-                Messages (7)
+                Messages {unreadCount > 0 && `(${unreadCount})`}
               </Button>
               <Button 
                 onClick={() => setShowPitchCreator(true)}
@@ -113,6 +131,10 @@ const FounderDashboard = () => {
               >
                 <Plus className="w-4 h-4 mr-2" />
                 New Pitch
+              </Button>
+              <Button variant="outline" onClick={handleSignOut}>
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
               </Button>
             </div>
           </div>
@@ -292,17 +314,7 @@ const FounderDashboard = () => {
 
 
           <TabsContent value="messages" className="space-y-6">
-            <Card className="bg-gradient-card shadow-soft">
-              <CardHeader>
-                <CardTitle>Messages</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12 text-muted-foreground">
-                  <MessageSquare className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p>Message center coming soon...</p>
-                </div>
-              </CardContent>
-            </Card>
+            <MessageCenter />
           </TabsContent>
         </Tabs>
       </div>
@@ -327,6 +339,15 @@ const FounderDashboard = () => {
 
       {showPitchCreator && (
         <PitchCreator onClose={() => setShowPitchCreator(false)} />
+      )}
+
+      {/* Messages Modal */}
+      {showMessages && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-background rounded-xl shadow-strong max-w-6xl w-full max-h-[90vh]">
+            <MessageCenter onClose={() => setShowMessages(false)} />
+          </div>
+        </div>
       )}
     </div>
   );
